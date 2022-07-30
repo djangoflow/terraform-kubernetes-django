@@ -1,15 +1,35 @@
 locals {
   deployments = defaults(var.deployments, {
-    replicas = 1
-    liveness_probe = {
+    replicas          = 1
+    pdb_min_available = 0
+    liveness_probe    = {
       enabled = false
     }
     readiness_probe = {
       enabled = false
     }
+    hpa_min_replicas = 0
+    hpa_max_replicas = 0
+    hpa_target_cpu   = 70
   })
 
-  env = merge(var.env, {})
+  database_url = coalesce(
+    lookup(var.secret_env, "DATABASE_URL", null),
+    lookup(var.env, "DATABASE_URL", null),
+    module.gcp.0.database_url
+  )
+
+  database_url_map = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<user>[^/?#:]*):(?P<password>[^/?#:]*)@(?P<hostname>[^/?#:]*):(?P<port>[0-9]*)/(?P<database>.*))?", local.database_url)
+
+  env        = var.env
+  secret_env = merge(var.secret_env, {
+    "DATABASE_URL"      = local.database_url
+    "POSTGRES_USER"     = lookup(local.database_url_map, "user")
+    "POSTGRES_PASSWORD" = lookup(local.database_url_map, "password")
+    "POSTGRES_HOST"     = lookup(local.database_url_map, "hostname")
+    "POSTGRES_DB"       = lookup(local.database_url_map, "database")
+    "POSTGRES_PORT"     = lookup(local.database_url_map, "port")
+  })
 
   common_labels = merge(
     {
@@ -21,19 +41,27 @@ locals {
   )
 
   ingress_annotations = merge(var.ingress_annotations, {
-      "kubernetes.io/ingress.class"                       = "nginx"
-      "nginx.ingress.kubernetes.io/tls-acme"              = "true"
-      "nginx.ingress.kubernetes.io/ssl-redirect"          = "true"
-      "nginx.ingress.kubernetes.io/proxy-body-size"       = "30m"
-      "nginx.ingress.kubernetes.io/proxy-read-timeout"    = "180s"
-      "nginx.ingress.kubernetes.io/proxy-write-timeout"   = "180s"
-      "nginx.ingress.kubernetes.io/proxy-connect-timeout" = "180s"
-      "cert-manager.io/cluster-issuer"                    = "letsencrypt-prod"
-      "nginx.ingress.kubernetes.io/enable-cors" : "true"
-      "nginx.ingress.kubernetes.io/cors-allow-methods" : "DELETE, GET, OPTIONS, PATCH, POST, PUT"
-      "nginx.ingress.kubernetes.io/cors-allow-headers" : "accept, accept-encoding, accept-language, cache-control, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with",
-      #    "nginx.ingress.kubernetes.io/cors-allow-origin" : "https://client.${local.domain},https://expert.${local.domain}, https://book.${local.domain}"
-      "kubernetes.io/tls-acme" : "true"
-    }
+    "kubernetes.io/ingress.class"                       = "nginx"
+    "nginx.ingress.kubernetes.io/tls-acme"              = "true"
+    "nginx.ingress.kubernetes.io/ssl-redirect"          = "true"
+    "nginx.ingress.kubernetes.io/proxy-body-size"       = "30m"
+    "nginx.ingress.kubernetes.io/proxy-read-timeout"    = "180s"
+    "nginx.ingress.kubernetes.io/proxy-write-timeout"   = "180s"
+    "nginx.ingress.kubernetes.io/proxy-connect-timeout" = "180s"
+    "cert-manager.io/cluster-issuer"                    = "letsencrypt-prod"
+    "nginx.ingress.kubernetes.io/enable-cors" : "true"
+    "nginx.ingress.kubernetes.io/cors-allow-methods" : "DELETE, GET, OPTIONS, PATCH, POST, PUT"
+    "nginx.ingress.kubernetes.io/cors-allow-headers" : "accept, accept-encoding, accept-language, cache-control, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with",
+    #    "nginx.ingress.kubernetes.io/cors-allow-origin" : "https://client.${local.domain},https://expert.${local.domain}, https://book.${local.domain}"
+    "kubernetes.io/tls-acme" : "true"
+  }
   )
 }
+
+
+output "variable" {
+
+  value = local.deployments
+
+}
+

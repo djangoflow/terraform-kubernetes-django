@@ -82,20 +82,19 @@ variable "gcp_db_instance" {
 # Deployments
 variable "deployments" {
   type = map(object({
-    name      = string
-    replicas  = optional(number)
-    command   = optional(list(string))
-    args      = optional(list(string))
-    port      = optional(number)
+    name                      = string
+    replicas                  = optional(number)
+    command                   = optional(list(string))
+    args                      = optional(list(string))
+    port                      = optional(number)
     resources_requests_cpu    = optional(string)
     resources_requests_memory = optional(string)
     resources_limits_cpu      = optional(string)
     resources_limits_memory   = optional(string)
-    hpa = optional(object({
-      min_replicas = number
-      max_replicas = number
-      target_cpu   = number
-    }))
+    pdb_min_available         = optional(number)
+    hpa_min_replicas = optional(number)
+    hpa_max_replicas = optional(number)
+    hpa_target_cpu   = optional(number)
     liveness_probe = optional(object({
       enabled  = bool
       http_get = optional(object({
@@ -129,6 +128,9 @@ variable "deployments" {
       name           = "web"
       args           = ["/start"]
       port           = 5000
+      hpa_min_replicas = 1
+      hpa_max_replicas = 2
+      hpa_target_cpu = 70
       liveness_probe = {
         enabled = true
       }

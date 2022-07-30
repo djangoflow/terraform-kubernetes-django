@@ -29,13 +29,13 @@ module "deployment" {
   liveness_probe_success        = var.liveness_probe.success_threshold
   startup_probe_enabled         = false
   security_context_enabled      = false
-  env                           = var.env
+  env                           = local.env
   resources_limits_cpu          = each.value.resources_limits_cpu
   resources_limits_memory       = each.value.resources_limits_memory
   resources_requests_cpu        = each.value.resources_requests_cpu
   resources_requests_memory     = each.value.resources_requests_memory
   env_secret                    = [
-  for k, v in    var.secret_env : {
+  for k, v in    local.secret_env : {
     secret = "${var.name}-secrets"
     name   = k
     key    = k

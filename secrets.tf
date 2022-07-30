@@ -4,5 +4,5 @@ resource "kubernetes_secret_v1" "secrets" {
     name      = "${var.name}-secrets"
     namespace = var.namespace
   }
-  data = var.secret_env
+  data = local.secret_env
 }
