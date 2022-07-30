@@ -87,12 +87,10 @@ variable "deployments" {
     command   = optional(list(string))
     args      = optional(list(string))
     port      = optional(number)
-    resources = optional(object({
-      resources_requests_cpu    = string
-      resources_requests_memory = string
-      resources_limits_cpu      = string
-      resources_limits_memory   = string
-    }))
+    resources_requests_cpu    = optional(string)
+    resources_requests_memory = optional(string)
+    resources_limits_cpu      = optional(string)
+    resources_limits_memory   = optional(string)
     hpa = optional(object({
       min_replicas = number
       max_replicas = number

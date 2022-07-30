@@ -1,7 +1,8 @@
 module "deployment" {
-  for_each                      = local.deployments
-  depends_on                    = [kubernetes_secret_v1.secrets]
-  source                        = "../terraform-kubernetes-deployment"
+  for_each   = local.deployments
+  depends_on = [kubernetes_secret_v1.secrets]
+  source     = "../terraform-kubernetes-deployment"
+
   service_account_name          = var.service_account_name
   object_prefix                 = "${var.name}-${each.key}"
   replicas                      = each.value.replicas
@@ -29,8 +30,10 @@ module "deployment" {
   startup_probe_enabled         = false
   security_context_enabled      = false
   env                           = var.env
-  resources_limits_cpu          = "500m"
-  resources_limits_memory       = "1024M"
+  resources_limits_cpu          = each.value.resources_limits_cpu
+  resources_limits_memory       = each.value.resources_limits_memory
+  resources_requests_cpu        = each.value.resources_requests_cpu
+  resources_requests_memory     = each.value.resources_requests_memory
   env_secret                    = [
   for k, v in    var.secret_env : {
     secret = "${var.name}-secrets"
