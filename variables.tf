@@ -1,3 +1,4 @@
+# General
 variable "name" {
   type        = string
   description = "The name for deployment"
@@ -7,6 +8,17 @@ variable "name" {
 variable "namespace" {
   type        = string
   description = "Kubernetes namespace to use with this installation"
+}
+
+variable "create_namespace" {
+  default     = true
+  description = "Should we create the namespace or use existing provided?"
+}
+
+variable "extra_labels" {
+  type        = map(string)
+  default     = {}
+  description = "Extra labels to add to generated objects"
 }
 
 variable "image_name" {
@@ -31,10 +43,126 @@ variable "image_pull_policy" {
   description = "Pull policy for the images"
 }
 
+variable "env" {
+  type        = map(string)
+  description = "A map of extra environment variables"
+  default     = {}
+}
+
+variable "secret_env" {
+  type        = map(string)
+  description = "A map of extra secret environment variables"
+}
+
 variable "service_account_name" {
   type        = string
   description = "Name of the kubernetes service account if any"
   default     = null
+}
+
+# GCP (Google Cloud Platform)
+variable "gcp_sa_name" {
+  type        = string
+  description = "Name of the GCP service account if any"
+  default     = null
+}
+
+variable "gcp_bucket_name" {
+  type        = string
+  default     = null
+  description = "Create and use Google storage with this name"
+}
+
+variable "gcp_db_instance" {
+  type        = string
+  default     = null
+  description = "Create a database and a user for this installation and use them instead of DATABASE_URL"
+}
+
+# Deployments
+variable "deployments" {
+  type = map(object({
+    name      = string
+    replicas  = optional(number)
+    command   = optional(list(string))
+    args      = optional(list(string))
+    port      = optional(number)
+    resources = optional(object({
+      resources_requests_cpu    = string
+      resources_requests_memory = string
+      resources_limits_cpu      = string
+      resources_limits_memory   = string
+    }))
+    hpa = optional(object({
+      min_replicas = number
+      max_replicas = number
+      target_cpu   = number
+    }))
+    liveness_probe = optional(object({
+      enabled  = bool
+      http_get = optional(object({
+        path   = string
+        port   = number
+        scheme = string
+      }))
+      success_threshold     = optional(number)
+      failure_threshold     = optional(number)
+      initial_delay_seconds = optional(number)
+      period_seconds        = optional(number)
+      timeout_seconds       = optional(number)
+    }))
+    readiness_probe = optional(object({
+      enabled  = bool
+      http_get = optional(object({
+        path   = string
+        port   = number
+        scheme = string
+      }))
+      success_threshold     = optional(number)
+      failure_threshold     = optional(number)
+      initial_delay_seconds = optional(number)
+      period_seconds        = optional(number)
+      timeout_seconds       = optional(number)
+    }))
+  }))
+  default = {
+    "web" = {
+      replicas       = 1
+      name           = "web"
+      args           = ["/start"]
+      port           = 5000
+      liveness_probe = {
+        enabled = true
+      }
+      readiness_probe = {
+        enabled = true
+      }
+    }
+    "celery-beat" = {
+      replicas       = 1
+      name           = "celery-beat"
+      args           = ["/start-celerybeat"]
+      port           = 0
+      liveness_probe = {
+        enabled = false
+      }
+      readiness_probe = {
+        enabled = false
+      }
+    }
+    "celery-worker" = {
+      replicas       = 1
+      name           = "celery-worker"
+      args           = ["/start-celeryworker"]
+      port           = 0
+      liveness_probe = {
+        enabled = false
+      }
+      readiness_probe = {
+        enabled = false
+      }
+    }
+  }
 }
 
 variable "readiness_probe" {
@@ -93,134 +221,51 @@ variable "liveness_probe" {
   }
 }
 
-
-variable "deployments" {
-  type = map(object({
-    name             = string
-    replicas         = optional(number)
-    command          = optional(list(string))
-    args             = optional(list(string))
-    resources        = optional(object({
-      resources_requests_cpu = string
-      resources_requests_memory = string
-      resources_limits_cpu = string
-      resources_limits_memory = string
-    }))
-    container_port   = optional(number)
-    hpa              = optional(object({
-      min_replicas = number
-      max_replicas = number
-      target_cpu   = number
-    }))
-    liveness_probe = optional(object({
-      http_get = object({
-        path   = string
-        port   = number
-        scheme = string
-      })
-      success_threshold     = number
-      failure_threshold     = number
-      initial_delay_seconds = number
-      period_seconds        = number
-      timeout_seconds       = number
-    }))
-    readiness_probe = optional(object({
-      http_get = object({
-        path   = string
-        port   = number
-        scheme = string
-      })
-      success_threshold     = number
-      failure_threshold     = number
-      initial_delay_seconds = number
-      period_seconds        = number
-      timeout_seconds       = number
-    }))
-  }))
-  default = {
-    "web" = {
-      role    = "web"
-      command = ["/start"]
-      container_port = 5000
-    }
-    "celery-beat" = {
-      role    = "celery-beat"
-      command = ["/start-celerybeat"]
-    }
-    "celery-worker" = {
-      role    = "celery-worker"
-      command = ["/start-celeryworker"]
-    }
-  }
+# Ingress
+variable "ingress" {
+  type        = map(map(string))
+  description = "A map of hostnames with maps of path-names and services"
+  # Example:
+  #  default     = {
+  #    "api.demo.djangoflow.com": {
+  #      "/": "api"
+  #    }
+  #  }
 }
 
-variable "rolling_update" {
-  type = object({
-    max_surge       = number
-    max_unavailable = number
-  })
-  description = "Perform rolling update with these parameters, otherwise recreate"
-  default     = null
+variable "ingress_annotations" {
+  type    = map(string)
+  default = {}
 }
 
-variable "environment" {
+# Cloudflare
+variable "cloudflare_zones" {
+  description = "A map of Cloudflare domain = zone_id, will create cloudflare records if supplied"
   type        = map(string)
-  description = "A map of extra environment variables"
   default     = {}
 }
 
-variable "secrets" {
-  type        = map(string)
-  description = "A map of extra secret environment variables"
-  default     = {}
-}
+# Extras
 
-#variable "ingress" {
-#  type = map
-#  default = {
-#    "web": {
-#      "hostname": "web"
-#      "path": "/"
-#      "service": "web"
-#    }
-#  }
-#}
-#
-#variable "celery_image" {
+#variable "postgres_namespace" {
 #  type = string
 #  default = null
-#  description = "Leave null to disable celery deployment"
 #}
-#
-#variable "celery" {
-#  default = {
-#    "workers": 2
-#  }
-#}
-#
+
+
 #variable "redis_namespace" {
 #  type = string
 #  default = null
 #}
 #
-#variable "postgres_namespace" {
-#  type = string
-#  default = null
-#}
 #
+#variable "redis" {
+#  type = object({
+#    enabled = bool
+#    url     = optional(string)
+#  })
+#  default = {
+#    enabled = false
+#  }
+#}
 
-variable "gcp_storage" {
-  type = string
-  default = null
-  description = "Create and use Google storage with this name"
-}
-
-variable "redis" {
-  type = object({
-    enabled = bool
-    url = optional(string)
-  })
-  default = {
-    enabled = false
-  }
-}

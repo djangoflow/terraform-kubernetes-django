@@ -1,14 +1,13 @@
-resource "kubernetes_service_account" "service_account" {
-  depends_on = [kubernetes_namespace_v1.namespace]
-  count = var.service_account_name != null ? 1 : 0
+resource "kubernetes_service_account_v1" "service_account" {
+  depends_on = [kubernetes_namespace_v1.namespace, module.gcp]
+  count      = var.service_account_name != null ? 1 : 0
   metadata {
-    name      = var.name
+    name      = var.service_account_name
     namespace = var.namespace
-
-    labels = {
-      app = var.name
+    labels    = local.common_labels
+    annotations = {
+      "iam.gke.io/gcp-service-account" = module.gcp.0.sa_email
     }
   }
-
-  automount_service_account_token = true
+  automount_service_account_token = false
 }

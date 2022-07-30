@@ -1,11 +1,15 @@
-variable "ingress_hostnames" {
+variable "cloudflare_zones" {
   type = map(string)
-  description = "A map of hostname:domain for ingress A records"
+  description = "A map of Cloudflare domain = zone_id"
   default = {}
 }
 
-variable "storage_hostnames" {
-  type = map(string)
-  description = "A map of hostname:domain for storage"
+variable "records" {
+  type = map(object({
+    type = string
+    value = string
+    proxied = bool
+  }))
+  description = "List of records to create"
   default = {}
 }
