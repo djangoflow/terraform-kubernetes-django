@@ -16,7 +16,14 @@ locals {
   database_url = coalesce(
     lookup(var.secret_env, "DATABASE_URL", null),
     lookup(var.env, "DATABASE_URL", null),
-    module.gcp.0.database_url
+    module.gcp != [] ? module.gcp.0.database_url : null,
+    module.postgresql != [] ? module.postgresql.0.database_url : null,
+  )
+
+  redis_url = coalesce(
+    lookup(var.secret_env, "REDIS_URL", null),
+    lookup(var.env, "REDIS_URL", null),
+#    module.redis ! [] ? module.redis.0.redis_url : null,
   )
 
   database_url_map = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<user>[^/?#:]*):(?P<password>[^/?#:]*)@(?P<hostname>[^/?#:]*):(?P<port>[0-9]*)/(?P<database>.*))?", local.database_url)
@@ -57,11 +64,3 @@ locals {
   }
   )
 }
-
-
-output "variable" {
-
-  value = local.deployments
-
-}
-

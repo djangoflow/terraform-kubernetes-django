@@ -128,9 +128,13 @@ variable "deployments" {
       name           = "web"
       args           = ["/start"]
       port           = 5000
-      hpa_min_replicas = 1
-      hpa_max_replicas = 2
-      hpa_target_cpu = 70
+      resources_limits_cpu = "250m"
+      resources_limits_memory = "2Gi"
+      resources_requests_cpu = "100m"
+      resources_requests_memory = "512M"
+#      hpa_min_replicas = 1
+#      hpa_max_replicas = 2
+#      hpa_target_cpu = 70
       liveness_probe = {
         enabled = true
       }
@@ -149,6 +153,10 @@ variable "deployments" {
       readiness_probe = {
         enabled = false
       }
+      resources_limits_cpu = "250m"
+      resources_limits_memory = "128M"
+      resources_requests_cpu = "30m"
+      resources_requests_memory = "64M"
     }
     "celery-worker" = {
       replicas       = 1
@@ -161,6 +169,10 @@ variable "deployments" {
       readiness_probe = {
         enabled = false
       }
+      resources_limits_cpu = "250m"
+      resources_limits_memory = "512M"
+      resources_requests_cpu = "30m"
+      resources_requests_memory = "64M"
     }
   }
 }
@@ -246,26 +258,18 @@ variable "cloudflare_zones" {
 }
 
 # Extras
+variable "postgres_enabled" {
+  description = "Create a postgres database deployment"
+  type = bool
+  default = false
+}
 
-#variable "postgres_namespace" {
-#  type = string
-#  default = null
-#}
+variable "postgres_storage_size" {
+  default = "10Gi"
+}
 
-
-#variable "redis_namespace" {
-#  type = string
-#  default = null
-#}
-#
-#
-#variable "redis" {
-#  type = object({
-#    enabled = bool
-#    url     = optional(string)
-#  })
-#  default = {
-#    enabled = false
-#  }
-#}
-
+variable "enable_redis" {
+  description = "Create a redis database deployment"
+  type = bool
+  default = false
+}
