@@ -1,7 +1,7 @@
 module "deployment" {
   for_each   = local.deployments
   depends_on = [kubernetes_secret_v1.secrets]
-  source     = "../terraform-kubernetes-deployment"
+  source     = "djangoflow/deployment/kubernetes"
 
   service_account_name          = var.service_account_name
   object_prefix                 = "${var.name}-${each.key}"
