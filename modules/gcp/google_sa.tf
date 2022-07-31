@@ -13,12 +13,6 @@ resource "google_storage_hmac_key" "hmac_key" {
   service_account_email = google_service_account.sa.0.email
 }
 
-# No longer required with workload identity
-#resource "google_service_account_key" "sa_key" {
-#  depends_on         = [google_service_account.sa]
-#  service_account_id = google_service_account.sa.0.name
-#}
-
 resource "google_service_account_iam_member" "role" {
   service_account_id = google_service_account.sa.0.name
   role               = "roles/iam.workloadIdentityUser"
@@ -29,9 +23,15 @@ resource "google_project_iam_binding" "extra_roles" {
   for_each = {for k, v in var.gcp_sa_extra_roles : k => v}
   role     = each.value
   members  = [
-#    "serviceAccount:${google_service_account.sa.0.project}.svc.id.goog[${var.namespace}/${var.service_account_name}]",
     "serviceAccount:${google_service_account.sa.0.email}"
   ]
   project    = google_service_account.sa[0].project
   depends_on = [google_service_account.sa]
 }
+
+# DEPRECATED
+# No longer required with workload identity
+#resource "google_service_account_key" "sa_key" {
+#  depends_on         = [google_service_account.sa]
+#  service_account_id = google_service_account.sa.0.name
+#}
