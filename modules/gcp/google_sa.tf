@@ -29,8 +29,8 @@ resource "google_project_iam_binding" "extra_roles" {
   for_each = {for k, v in var.gcp_sa_extra_roles : k => v}
   role     = each.value
   members  = [
-    "serviceAccount:${google_service_account.sa.0.project}.svc.id.goog[${var.namespace}/${var.service_account_name}]",
-#    "serviceAccount:${google_service_account.sa.0.email}"
+#    "serviceAccount:${google_service_account.sa.0.project}.svc.id.goog[${var.namespace}/${var.service_account_name}]",
+    "serviceAccount:${google_service_account.sa.0.email}"
   ]
   project    = google_service_account.sa[0].project
   depends_on = [google_service_account.sa]
