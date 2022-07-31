@@ -19,7 +19,7 @@ resource "kubernetes_persistent_volume_claim_v1" "pgdata" {
 module "postgresql" {
   count = var.postgres_enabled ? 1 : 0
   depends_on = [kubernetes_persistent_volume_claim_v1.pgdata]
-  source = "../terraform-kubernetes-postgresql"
+  source = "djangoflow/postgresql/kubernetes"
   image_name = "docker.io/postgres"
   security_context_uid = 999
   security_context_gid = 999

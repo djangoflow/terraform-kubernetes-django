@@ -1,6 +1,6 @@
 module "redis" {
   count = var.redis_enabled ? 1 : 0
-  source = "../terraform-kubernetes-redis"
+  source = "djangoflow/redis/kubernetes"
   namespace = var.namespace
   object_prefix = "redis"
   password_required = true
