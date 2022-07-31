@@ -10,6 +10,7 @@ module "deployment" {
   arguments                     = each.value.args
   image_name                    = var.image_name
   image_tag                     = var.image_tag
+  pull_policy                   = var.image_pull_policy
   namespace                     = var.namespace
   readiness_probe_enabled       = each.value.readiness_probe.enabled
   readiness_probe_path          = var.readiness_probe.http_get.path

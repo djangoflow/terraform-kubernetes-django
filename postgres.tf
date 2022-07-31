@@ -20,6 +20,7 @@ module "postgresql" {
   count = var.postgres_enabled ? 1 : 0
   depends_on = [kubernetes_persistent_volume_claim_v1.pgdata]
   source = "djangoflow/postgresql/kubernetes"
+  version = "1.1.2"
   image_name = "docker.io/postgres"
   security_context_uid = 999
   security_context_gid = 999
@@ -29,6 +30,6 @@ module "postgresql" {
   namespace = var.namespace
   pvc_name = kubernetes_persistent_volume_claim_v1.pgdata.0.metadata.0.name
   object_prefix = "postgres"
-  resources_limits_memory = "1Gi"
-  resources_limits_cpu = "500m"
+  resources_limits_memory = "512M"
+  resources_limits_cpu = "100m"
 }
