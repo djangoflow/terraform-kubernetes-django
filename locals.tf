@@ -23,7 +23,7 @@ locals {
   redis_url = coalesce(
     lookup(var.secret_env, "REDIS_URL", null),
     lookup(var.env, "REDIS_URL", null),
-#    module.redis ! [] ? module.redis.0.redis_url : null,
+    module.redis != [] ? module.redis.0.redis_url : null,
   )
 
   database_url_map = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<user>[^/?#:]*):(?P<password>[^/?#:]*)@(?P<hostname>[^/?#:]*):(?P<port>[0-9]*)/(?P<database>.*))?", local.database_url)
@@ -31,6 +31,8 @@ locals {
   env        = var.env
   secret_env = merge(var.secret_env, {
     "DATABASE_URL"      = local.database_url
+    "REDIS_URL"         = local.redis_url
+    CELERY_BROKER_URL   = local.redis_url
     "POSTGRES_USER"     = lookup(local.database_url_map, "user")
     "POSTGRES_PASSWORD" = lookup(local.database_url_map, "password")
     "POSTGRES_HOST"     = lookup(local.database_url_map, "hostname")

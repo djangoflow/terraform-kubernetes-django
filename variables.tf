@@ -154,7 +154,7 @@ variable "deployments" {
         enabled = false
       }
       resources_limits_cpu = "250m"
-      resources_limits_memory = "128M"
+      resources_limits_memory = "512M"
       resources_requests_cpu = "30m"
       resources_requests_memory = "64M"
     }
@@ -268,7 +268,7 @@ variable "postgres_storage_size" {
   default = "10Gi"
 }
 
-variable "enable_redis" {
+variable "redis_enabled" {
   description = "Create a redis database deployment"
   type = bool
   default = false
