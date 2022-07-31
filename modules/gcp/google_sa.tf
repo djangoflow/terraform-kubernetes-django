@@ -14,16 +14,16 @@ resource "google_service_account_key" "sa_key" {
   service_account_id = google_service_account.sa.0.name
 }
 
-resource "google_service_account_iam_member" "main" {
+resource "google_service_account_iam_member" "workloadIdentity" {
   service_account_id = google_service_account.sa.0.name
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${google_service_account.sa.0.project}.svc.id.goog[${var.namespace}/${var.service_account_name}]"
 }
 
-#resource "google_project_iam_member" "workload_identity_sa_bindings" {
-#  for_each = toset(var.roles)
-#
-#  project = var.project_id
-#  role    = each.value
-#  member  =
-#}
+resource "google_project_iam_binding" "firebaseAdmin" {
+  for_each   = {for k, v in var.gcp_sa_extra_roles : k => v}
+  role       = each.value
+  members    = ["serviceAccount:${google_service_account.sa.0.email}"]
+  depends_on = [google_service_account.sa]
+  project    = google_service_account.sa[0].project
+}

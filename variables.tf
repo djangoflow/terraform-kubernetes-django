@@ -67,6 +67,12 @@ variable "gcp_sa_name" {
   default     = null
 }
 
+variable "gcp_sa_extra_roles" {
+  type        = list(string)
+  description = "Create role bindings to these roles"
+  default     = null
+}
+
 variable "gcp_bucket_name" {
   type        = string
   default     = null
