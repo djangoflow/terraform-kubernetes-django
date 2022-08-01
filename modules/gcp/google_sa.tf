@@ -19,14 +19,12 @@ resource "google_service_account_iam_member" "role" {
   member             = local.service_account_member
 }
 
-resource "google_project_iam_binding" "extra_roles" {
-  for_each = {for k, v in var.gcp_sa_extra_roles : k => v}
-  role     = each.value
-  members  = [
-    "serviceAccount:${google_service_account.sa.0.email}"
-  ]
-  project    = google_service_account.sa[0].project
+resource "google_project_iam_member" "extra_roles" {
   depends_on = [google_service_account.sa]
+  for_each = {for k, v in var.gcp_sa_extra_roles : k => v}
+  project    = google_service_account.sa.0.project
+  role     = each.value
+  member   = "serviceAccount:${google_service_account.sa.0.email}"
 }
 
 # DEPRECATED
