@@ -35,6 +35,7 @@ module "deployment" {
   resources_limits_memory       = each.value.resources_limits_memory
   resources_requests_cpu        = each.value.resources_requests_cpu
   resources_requests_memory     = each.value.resources_requests_memory
+  labels                        = local.common_labels
   env_secret                    = [
   for k, v in    local.secret_env : {
     secret = "${var.name}-secrets"
