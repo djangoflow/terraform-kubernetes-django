@@ -98,10 +98,11 @@ variable "deployments" {
     resources_limits_cpu      = optional(string)
     resources_limits_memory   = optional(string)
     pdb_min_available         = optional(number)
-    hpa_min_replicas = optional(number)
-    hpa_max_replicas = optional(number)
-    hpa_target_cpu   = optional(number)
-    liveness_probe = optional(object({
+    hpa_min_replicas          = optional(number)
+    hpa_max_replicas          = optional(number)
+    hpa_target_cpu            = optional(number)
+    pre_install_migrate       = optional(bool)
+    liveness_probe            = optional(object({
       enabled  = bool
       http_get = optional(object({
         path   = string
@@ -130,18 +131,18 @@ variable "deployments" {
   }))
   default = {
     "web" = {
-      replicas       = 1
-      name           = "web"
-      args           = ["/start"]
-      port           = 5000
-      resources_limits_cpu = "250m"
-      resources_limits_memory = "2Gi"
-      resources_requests_cpu = "100m"
+      replicas                  = 1
+      name                      = "web"
+      args                      = ["/start"]
+      port                      = 5000
+      resources_limits_cpu      = "250m"
+      resources_limits_memory   = "2Gi"
+      resources_requests_cpu    = "100m"
       resources_requests_memory = "512M"
-#      hpa_min_replicas = 1
-#      hpa_max_replicas = 2
-#      hpa_target_cpu = 70
-      liveness_probe = {
+      #      hpa_min_replicas = 1
+      #      hpa_max_replicas = 2
+      #      hpa_target_cpu = 70
+      liveness_probe            = {
         enabled = true
       }
       readiness_probe = {
@@ -159,9 +160,9 @@ variable "deployments" {
       readiness_probe = {
         enabled = false
       }
-      resources_limits_cpu = "250m"
-      resources_limits_memory = "512M"
-      resources_requests_cpu = "30m"
+      resources_limits_cpu      = "250m"
+      resources_limits_memory   = "512M"
+      resources_requests_cpu    = "30m"
       resources_requests_memory = "64M"
     }
     "celery-worker" = {
@@ -175,9 +176,9 @@ variable "deployments" {
       readiness_probe = {
         enabled = false
       }
-      resources_limits_cpu = "250m"
-      resources_limits_memory = "512M"
-      resources_requests_cpu = "30m"
+      resources_limits_cpu      = "250m"
+      resources_limits_memory   = "512M"
+      resources_requests_cpu    = "30m"
       resources_requests_memory = "64M"
     }
   }
@@ -266,8 +267,8 @@ variable "cloudflare_zones" {
 # Extras
 variable "postgres_enabled" {
   description = "Create a postgres database deployment"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "postgres_storage_size" {
@@ -276,16 +277,16 @@ variable "postgres_storage_size" {
 
 variable "redis_enabled" {
   description = "Create a redis database deployment"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "redis_resources_memory" {
-  type = string
+  type    = string
   default = "512M"
 }
 
 variable "redis_resources_cpu" {
-  type = string
+  type    = string
   default = "200m"
 }

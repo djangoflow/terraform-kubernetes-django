@@ -16,4 +16,3 @@ terraform {
     module_variable_optional_attrs
   ]
 }
-

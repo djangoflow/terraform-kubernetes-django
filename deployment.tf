@@ -1,7 +1,11 @@
 module "deployment" {
+  #  source     = "../terraform-kubernetes-deployment"
+  source     = "djangoflow/deployment/kubernetes"
+  version    = ">=1.6.0"
   for_each   = local.deployments
   depends_on = [kubernetes_secret_v1.secrets]
-  source     = "djangoflow/deployment/kubernetes"
+
+  pre_install_job_command = each.value.pre_install_migrate == true ? ["python", "manage.py", "migrate"] : []
 
   service_account_name          = var.service_account_name
   object_prefix                 = "${var.name}-${each.key}"
