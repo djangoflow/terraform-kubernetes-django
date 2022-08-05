@@ -279,3 +279,13 @@ variable "redis_enabled" {
   type = bool
   default = false
 }
+
+variable "redis_resources_memory" {
+  type = string
+  default = "512M"
+}
+
+variable "redis_resources_cpu" {
+  type = string
+  default = "200m"
+}

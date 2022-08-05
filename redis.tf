@@ -4,6 +4,6 @@ module "redis" {
   namespace = var.namespace
   object_prefix = "redis"
   password_required = true
-  resources_limits_memory = "1Gi"
-  resources_limits_cpu = "500m"
+  resources_limits_memory = var.redis_resources_memory
+  resources_limits_cpu = var.redis_resources_cpu
 }
