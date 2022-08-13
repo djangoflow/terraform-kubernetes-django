@@ -258,10 +258,10 @@ variable "ingress_annotations" {
 }
 
 # Cloudflare
-variable "cloudflare_zones" {
-  description = "A map of Cloudflare domain = zone_id, will create cloudflare records if supplied"
-  type        = map(string)
-  default     = {}
+variable "cloudflare_enabled" {
+  description = "Create cloudflare records if true"
+  type        = bool
+  default     = true
 }
 
 # Extras
