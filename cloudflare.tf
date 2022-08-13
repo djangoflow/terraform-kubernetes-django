@@ -2,7 +2,6 @@ module "cloudflare" {
   depends_on       = [kubernetes_ingress_v1.ingress]
   count            = var.cloudflare_enabled ? 1 : 0
   source           = "./modules/cloudflare"
-  cloudflare_zones = var.cloudflare_zones
   records          = merge({
   for k, v in var.ingress :  k => {
     value   = kubernetes_ingress_v1.ingress.status.0.load_balancer.0.ingress.0.ip
