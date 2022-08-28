@@ -30,6 +30,6 @@ module "postgresql" {
   namespace = var.namespace
   pvc_name = kubernetes_persistent_volume_claim_v1.pgdata.0.metadata.0.name
   object_prefix = "postgres"
-  resources_limits_memory = "512M"
-  resources_limits_cpu = "100m"
+  resources_limits_memory = var.postgres_resources_memory
+  resources_limits_cpu = var.postgres_resources_cpu
 }

@@ -275,6 +275,16 @@ variable "postgres_storage_size" {
   default = "10Gi"
 }
 
+variable "postgres_resources_memory" {
+  type    = string
+  default = null
+}
+
+variable "postgres_resources_cpu" {
+  type    = string
+  default = null
+}
+
 variable "redis_enabled" {
   description = "Create a redis database deployment"
   type        = bool
@@ -283,10 +293,10 @@ variable "redis_enabled" {
 
 variable "redis_resources_memory" {
   type    = string
-  default = "512M"
+  default = null
 }
 
 variable "redis_resources_cpu" {
   type    = string
-  default = "200m"
+  default = null
 }
