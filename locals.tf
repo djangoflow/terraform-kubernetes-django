@@ -42,8 +42,8 @@ locals {
 
   common_labels = merge(
     {
-      "app.kubernetes.io/part-of" : var.name,
-      "app.kubernetes.io/version" : var.image_tag,
+      "app.kubernetes.io/part-of" : var.name
+      "app.kubernetes.io/version" : var.image_tag
       "app.kubernetes.io/managed-by" : "terraform"
     },
     var.extra_labels,
