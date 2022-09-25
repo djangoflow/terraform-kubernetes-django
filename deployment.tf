@@ -40,7 +40,8 @@ module "deployment" {
   resources_requests_cpu        = each.value.resources_requests_cpu
   resources_requests_memory     = each.value.resources_requests_memory
   labels                        = merge(local.common_labels, {
-    "app.kubernetes.io/instance" : "${var.name}-${each.key}"
+    "app.kubernetes.io/instance" = "${var.name}-${each.key}"
+    "app.kubernetes.io/version"  = var.image_tag
   })
 
   env_secret = [
