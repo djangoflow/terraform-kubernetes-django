@@ -22,13 +22,13 @@ locals {
 
   database_url_map = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<user>[^/?#:]*):(?P<password>[^/?#:]*)@(?P<hostname>[^/?#:]*):(?P<port>[0-9]*)/(?P<database>.*))?", local.database_url)
 
-  env = var.gcp_add_aws_s3_env == false ? var.env : merge(var.env, {
+  env = var.gcp_add_aws_s3_env == false ? var.env : merge({
     AWS_ACCESS_KEY_ID : module.gcp.0.google_storage_hmac_key.access_id
     AWS_SECRET_ACCESS_KEY : module.gcp.0.google_storage_hmac_key.secret
     AWS_STORAGE_BUCKET_NAME : var.gcp_bucket_name
     AWS_S3_ENDPOINT_URL : "https://storage.googleapis.com"
-  })
-  secret_env = merge(var.secret_env, {
+  }, var.env)
+  secret_env = merge({
     "DATABASE_URL"      = local.database_url
     "REDIS_URL"         = local.redis_url
     "CELERY_BROKER_URL" = local.redis_url
@@ -37,7 +37,7 @@ locals {
     "POSTGRES_HOST"     = lookup(local.database_url_map, "hostname")
     "POSTGRES_DB"       = lookup(local.database_url_map, "database")
     "POSTGRES_PORT"     = lookup(local.database_url_map, "port")
-  })
+  }, var.secret_env)
 
   common_labels = merge(
     {
@@ -47,7 +47,7 @@ locals {
     var.extra_labels,
   )
 
-  ingress_annotations = merge(var.ingress_annotations, {
+  ingress_annotations = merge({
     "kubernetes.io/ingress.class"                       = "nginx"
     "nginx.ingress.kubernetes.io/tls-acme"              = "true"
     "nginx.ingress.kubernetes.io/ssl-redirect"          = "true"
@@ -61,6 +61,5 @@ locals {
     "nginx.ingress.kubernetes.io/cors-allow-headers" : "accept, accept-encoding, accept-language, cache-control, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with",
     #    "nginx.ingress.kubernetes.io/cors-allow-origin" : "https://client.${local.domain},https://expert.${local.domain}, https://book.${local.domain}"
     "kubernetes.io/tls-acme" : "true"
-  }
-  )
+  }, var.ingress_annotations)
 }
