@@ -58,7 +58,7 @@ module "deployment" {
     {
       name           = "http"
       protocol       = "TCP"
-      container_port = "5000"
+      container_port = each.value.port
       service_port   = "80"
     }
   ] : []

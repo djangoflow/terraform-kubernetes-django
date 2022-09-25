@@ -27,3 +27,7 @@ variable "gcp_sa_extra_roles" {
   type    = list(string)
   default = []
 }
+
+variable "gcp_bucket_public" {
+  default = true
+}

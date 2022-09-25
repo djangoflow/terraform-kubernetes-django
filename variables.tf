@@ -79,6 +79,18 @@ variable "gcp_bucket_name" {
   description = "Create and use Google storage with this name"
 }
 
+variable "gcp_bucket_public" {
+  type = bool
+  default = true
+  description = "Make the GCP bucket public and create a CNAME"
+}
+
+variable "gcp_add_aws_s3_env" {
+  type        = bool
+  default     = false
+  description = "Add AWS_ variables for the GCS bucket"
+}
+
 variable "gcp_db_instance" {
   type        = string
   default     = null
@@ -289,9 +301,9 @@ variable "celery_beat_defaults" {
     name                = "celery-beat"
     command             = null
     pre_install_migrate = false
-    args           = ["/start-celerybeat"]
-    port           = 0
-    liveness_probe = {
+    args                = ["/start-celerybeat"]
+    port                = 0
+    liveness_probe      = {
       enabled = false
     }
     readiness_probe = {
@@ -304,7 +316,6 @@ variable "celery_beat_defaults" {
     pdb_min_available         = 0
     hpa_max_replicas          = 0
     env                       = {}
-
   }
 }
 

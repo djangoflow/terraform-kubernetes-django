@@ -33,7 +33,7 @@ resource "google_storage_bucket_iam_binding" "media-bucket-binding-admin" {
 }
 
 resource "google_storage_bucket_iam_binding" "media-bucket-binding-public" {
-  count      = var.gcp_bucket_name != null && var.gcp_sa_name != null ? 1 : 0
+  count      = var.gcp_bucket_name != null && var.gcp_sa_name != null && var.gcp_bucket_public == true ? 1 : 0
   depends_on = [google_service_account.sa.0]
   bucket     = google_storage_bucket.media-bucket.0.name
   role       = "roles/storage.objectViewer"
