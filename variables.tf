@@ -298,7 +298,7 @@ variable "celery_beat_defaults" {
       enabled = false
     }
     resources_limits_cpu      = "250m"
-    resources_limits_memory   = "128Mi"
+    resources_limits_memory   = "256Mi"
     resources_requests_cpu    = "30m"
     resources_requests_memory = "90Mi"
     pdb_min_available         = 0
