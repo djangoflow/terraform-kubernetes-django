@@ -85,25 +85,27 @@ variable "gcp_db_instance" {
   description = "Create a database and a user for this installation and use them instead of DATABASE_URL"
 }
 
+
 # Deployments
 variable "deployments" {
   type = map(object({
     name                      = string
-    replicas                  = optional(number)
+    replicas                  = optional(number, 1)
     command                   = optional(list(string))
-    args                      = optional(list(string))
+    args                      = optional(list(string), ["/start"])
     port                      = optional(number)
-    resources_requests_cpu    = optional(string)
-    resources_requests_memory = optional(string)
-    resources_limits_cpu      = optional(string)
-    resources_limits_memory   = optional(string)
-    pdb_min_available         = optional(number)
-    hpa_min_replicas          = optional(number)
-    hpa_max_replicas          = optional(number)
-    hpa_target_cpu            = optional(number)
-    pre_install_migrate       = optional(bool)
+    resources_requests_cpu    = optional(string, "100m")
+    resources_requests_memory = optional(string, "256Mi")
+    resources_limits_cpu      = optional(string, "1000m")
+    resources_limits_memory   = optional(string, "2Gi")
+    pdb_min_available         = optional(number, 0)
+    hpa_min_replicas          = optional(number, 0)
+    hpa_max_replicas          = optional(number, 0)
+    hpa_target_cpu            = optional(number, 80)
+    pre_install_migrate       = optional(bool, false)
+    env                       = optional(map(string))
     liveness_probe            = optional(object({
-      enabled  = bool
+      enabled  = optional(bool, true)
       http_get = optional(object({
         path   = string
         port   = number
@@ -116,7 +118,7 @@ variable "deployments" {
       timeout_seconds       = optional(number)
     }))
     readiness_probe = optional(object({
-      enabled  = bool
+      enabled  = optional(bool, true)
       http_get = optional(object({
         path   = string
         port   = number
@@ -131,55 +133,10 @@ variable "deployments" {
   }))
   default = {
     "web" = {
-      replicas                  = 1
-      name                      = "web"
-      args                      = ["/start"]
-      port                      = 5000
-      resources_limits_cpu      = "250m"
-      resources_limits_memory   = "2Gi"
-      resources_requests_cpu    = "100m"
-      resources_requests_memory = "512M"
-      #      hpa_min_replicas = 1
-      #      hpa_max_replicas = 2
-      #      hpa_target_cpu = 70
-      liveness_probe            = {
-        enabled = true
-      }
-      readiness_probe = {
-        enabled = true
-      }
-    }
-    "celery-beat" = {
-      replicas       = 1
-      name           = "celery-beat"
-      args           = ["/start-celerybeat"]
-      port           = 0
-      liveness_probe = {
-        enabled = false
-      }
-      readiness_probe = {
-        enabled = false
-      }
-      resources_limits_cpu      = "250m"
-      resources_limits_memory   = "512M"
-      resources_requests_cpu    = "30m"
-      resources_requests_memory = "64M"
-    }
-    "celery-worker" = {
-      replicas       = 1
-      name           = "celery-worker"
-      args           = ["/start-celeryworker"]
-      port           = 0
-      liveness_probe = {
-        enabled = false
-      }
-      readiness_probe = {
-        enabled = false
-      }
-      resources_limits_cpu      = "250m"
-      resources_limits_memory   = "512M"
-      resources_requests_cpu    = "30m"
-      resources_requests_memory = "64M"
+      pre_install_migrate = true
+      replicas            = 1
+      name                = "web"
+      port                = 5000
     }
   }
 }
@@ -275,12 +232,22 @@ variable "postgres_storage_size" {
   default = "10Gi"
 }
 
-variable "postgres_resources_memory" {
+variable "postgres_resources_requests_memory" {
+  type    = string
+  default = "256Mi"
+}
+
+variable "postgres_resources_requests_cpu" {
+  type    = string
+  default = "250m"
+}
+
+variable "postgres_resources_limits_memory" {
   type    = string
   default = null
 }
 
-variable "postgres_resources_cpu" {
+variable "postgres_resources_limits_cpu" {
   type    = string
   default = null
 }
@@ -291,12 +258,76 @@ variable "redis_enabled" {
   default     = false
 }
 
-variable "redis_resources_memory" {
+variable "redis_resources_limits_memory" {
   type    = string
   default = null
 }
 
-variable "redis_resources_cpu" {
+variable "redis_resources_limits_cpu" {
   type    = string
   default = null
+}
+
+variable "redis_resources_requests_memory" {
+  type    = string
+  default = "128Mi"
+}
+
+variable "redis_resources_requests_cpu" {
+  type    = string
+  default = "50m"
+}
+
+variable "celery_enabled" {
+  description = "A short-hand for adding celery-beat and celery-worker deployments"
+  default     = true
+}
+
+variable "celery_beat_defaults" {
+  default = {
+    replicas            = 1
+    name                = "celery-beat"
+    command             = null
+    pre_install_migrate = false
+    args           = ["/start-celerybeat"]
+    port           = 0
+    liveness_probe = {
+      enabled = false
+    }
+    readiness_probe = {
+      enabled = false
+    }
+    resources_limits_cpu      = "250m"
+    resources_limits_memory   = "128Mi"
+    resources_requests_cpu    = "30m"
+    resources_requests_memory = "90Mi"
+    pdb_min_available         = 0
+    hpa_max_replicas          = 0
+    env                       = {}
+
+  }
+}
+
+variable "celery_worker_defaults" {
+  default = {
+    replicas            = 1
+    name                = "celery-worker"
+    command             = null
+    pre_install_migrate = false
+    args                = ["/start-celeryworker"]
+    port                = 0
+    liveness_probe      = {
+      enabled = false
+    }
+    readiness_probe = {
+      enabled = false
+    }
+    resources_limits_cpu      = "900m"
+    resources_limits_memory   = "768Mi"
+    resources_requests_cpu    = "100m"
+    resources_requests_memory = "128Mi"
+    pdb_min_available         = 0
+    hpa_max_replicas          = 0
+    env                       = {}
+  }
 }

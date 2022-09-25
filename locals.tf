@@ -1,17 +1,11 @@
 locals {
-  deployments = defaults(var.deployments, {
-    replicas          = 1
-    pdb_min_available = 0
-    liveness_probe    = {
-      enabled = false
-    }
-    readiness_probe = {
-      enabled = false
-    }
-    hpa_min_replicas = 0
-    hpa_max_replicas = 0
-    hpa_target_cpu   = 70
-  })
+#  deployments = var.celery_enabled == false ? var.deployments : merge(var.deployments, {
+  deployments = merge(var.deployments, {
+    "celery-beat" = var.celery_beat_defaults
+  }, {
+    "celery-worker" = var.celery_worker_defaults
+  }
+  )
 
   database_url = coalesce(
     lookup(var.secret_env, "DATABASE_URL", null),

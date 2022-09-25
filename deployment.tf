@@ -34,7 +34,7 @@ module "deployment" {
   liveness_probe_success        = var.liveness_probe.success_threshold
   startup_probe_enabled         = false
   security_context_enabled      = false
-  env                           = local.env
+  env                           = each.value.env == null ? local.env : merge(local.env, each.value.env)
   resources_limits_cpu          = each.value.resources_limits_cpu
   resources_limits_memory       = each.value.resources_limits_memory
   resources_requests_cpu        = each.value.resources_requests_cpu
