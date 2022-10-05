@@ -61,9 +61,9 @@ variable "service_account_name" {
 }
 
 # GCP (Google Cloud Platform)
-variable "gcp_sa_name" {
+variable "cloud_sa_name" {
   type        = string
-  description = "Name of the GCP service account if any"
+  description = "Name of the GCP/AWS service account if any"
   default     = null
 }
 
@@ -79,10 +79,10 @@ variable "gcp_bucket_name" {
   description = "Create and use Google storage with this name"
 }
 
-variable "gcp_bucket_public" {
-  type = bool
-  default = true
-  description = "Make the GCP bucket public and create a CNAME"
+variable "public_storage" {
+  type        = bool
+  default     = true
+  description = "Make the storge GCP bucket/AWS S3 public and create a CNAME"
 }
 
 variable "gcp_add_aws_s3_env" {
@@ -341,4 +341,10 @@ variable "celery_worker_defaults" {
     hpa_max_replicas          = 0
     env                       = {}
   }
+}
+
+variable "aws_s3_name" {
+  type        = string
+  default     = null
+  description = "Create and use AWS S3"
 }

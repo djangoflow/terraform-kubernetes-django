@@ -14,6 +14,7 @@ module "deployment" {
   arguments                     = each.value.args
   image_name                    = var.image_name
   image_tag                     = var.image_tag
+  image_pull_secrets            = var.image_pull_secrets
   pull_policy                   = var.image_pull_policy
   namespace                     = var.namespace
   readiness_probe_enabled       = each.value.readiness_probe.enabled
@@ -51,9 +52,9 @@ module "deployment" {
     key    = k
   }
   ]
-  node_selector = {
+  node_selector = var.gcp_bucket_name != null && var.cloud_sa_name != null ? {
     "iam.gke.io/gke-metadata-server-enabled" = "true"
-  }
+  } : {}
   ports = each.value.port > 0 ? [
     {
       name           = "http"

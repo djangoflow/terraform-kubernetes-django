@@ -22,12 +22,21 @@ locals {
 
   database_url_map = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<user>[^/?#:]*):(?P<password>[^/?#:]*)@(?P<hostname>[^/?#:]*):(?P<port>[0-9]*)/(?P<database>.*))?", local.database_url)
 
-  env = var.gcp_add_aws_s3_env == false ? var.env : merge({
+  gcp_env = var.gcp_add_aws_s3_env == false ? {} : {
     AWS_ACCESS_KEY_ID : module.gcp.0.google_storage_hmac_key.access_id
     AWS_SECRET_ACCESS_KEY : module.gcp.0.google_storage_hmac_key.secret
     AWS_STORAGE_BUCKET_NAME : var.gcp_bucket_name
     AWS_S3_ENDPOINT_URL : "https://storage.googleapis.com"
-  }, var.env)
+  }
+  aws_env = var.aws_s3_name == null ? {} : {
+    AWS_ACCESS_KEY_ID : module.aws.0.aws_iam_access_key.id
+    AWS_SECRET_ACCESS_KEY : module.aws.0.aws_iam_access_key.secret
+    AWS_STORAGE_BUCKET_NAME : var.aws_s3_name
+    AWS_S3_ENDPOINT_URL: module.aws.0.aws_s3_endpoint_url
+  }
+
+  env = merge(local.gcp_env, local.aws_env, var.env)
+
   secret_env = merge({
     "DATABASE_URL"      = local.database_url
     "REDIS_URL"         = local.redis_url
