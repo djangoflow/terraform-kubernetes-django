@@ -32,15 +32,15 @@ locals {
     AWS_ACCESS_KEY_ID : module.aws.0.aws_iam_access_key.id
     AWS_SECRET_ACCESS_KEY : module.aws.0.aws_iam_access_key.secret
     AWS_STORAGE_BUCKET_NAME : var.aws_s3_name
-    AWS_S3_ENDPOINT_URL: module.aws.0.aws_s3_endpoint_url
+    AWS_S3_ENDPOINT_URL : module.aws.0.aws_s3_endpoint_url
   }
 
   env = merge(local.gcp_env, local.aws_env, var.env)
 
   secret_env = merge({
     "DATABASE_URL"      = local.database_url
-    "REDIS_URL"         = local.redis_url
-    "CELERY_BROKER_URL" = local.redis_url
+    "REDIS_URL"         = "${local.redis_url}${var.redis_db_index}"
+    "CELERY_BROKER_URL" = "${local.redis_url}${var.celery_db_index}"
     "POSTGRES_USER"     = lookup(local.database_url_map, "user")
     "POSTGRES_PASSWORD" = lookup(local.database_url_map, "password")
     "POSTGRES_HOST"     = lookup(local.database_url_map, "hostname")

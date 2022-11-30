@@ -290,9 +290,17 @@ variable "redis_resources_requests_cpu" {
   default = "50m"
 }
 
+variable "redis_db_index" {
+  default = "1"
+}
+
 variable "celery_enabled" {
   description = "A short-hand for adding celery-beat and celery-worker deployments"
   default     = true
+}
+
+variable "celery_db_index" {
+  default = "2"
 }
 
 variable "celery_beat_defaults" {
