@@ -5,6 +5,7 @@ resource "kubernetes_persistent_volume_claim_v1" "pgdata" {
     namespace = var.namespace
     labels    = local.common_labels
   }
+  wait_until_bound = false
   spec {
     access_modes = ["ReadWriteOnce"]
     resources {
