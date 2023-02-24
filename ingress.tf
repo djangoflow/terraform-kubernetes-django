@@ -1,4 +1,5 @@
 resource "kubernetes_ingress_v1" "ingress" {
+  count = length(var.ingress) > 0 ? 1 : 0
   metadata {
     name        = var.name
     namespace   = var.namespace

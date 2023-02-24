@@ -356,3 +356,27 @@ variable "aws_s3_name" {
   default     = null
   description = "Create and use AWS S3"
 }
+
+variable "volumes" {
+  type        = any
+  description = "Volume configuration"
+  default     = []
+}
+
+variable "security_context_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "security_context_gid" {
+  default = 101
+}
+
+variable "security_context_uid" {
+  default = 101
+}
+
+variable "security_context_fsgroup" {
+  default = null
+}
+

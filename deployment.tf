@@ -1,7 +1,7 @@
 module "deployment" {
   #  source     = "../terraform-kubernetes-deployment"
   source     = "djangoflow/deployment/kubernetes"
-  version    = ">=1.6.0"
+  version    = ">=1.6.2"
   for_each   = local.deployments
   depends_on = [kubernetes_secret_v1.secrets]
 
@@ -17,6 +17,7 @@ module "deployment" {
   image_pull_secrets            = var.image_pull_secrets
   pull_policy                   = var.image_pull_policy
   namespace                     = var.namespace
+  volumes                       = var.volumes
   readiness_probe_enabled       = each.value.readiness_probe.enabled
   readiness_probe_path          = var.readiness_probe.http_get.path
   readiness_probe_port          = var.readiness_probe.http_get.port
@@ -34,7 +35,10 @@ module "deployment" {
   liveness_probe_failure        = var.liveness_probe.failure_threshold
   liveness_probe_success        = var.liveness_probe.success_threshold
   startup_probe_enabled         = false
-  security_context_enabled      = false
+  security_context_enabled      = var.security_context_enabled
+  security_context_gid          = var.security_context_gid
+  security_context_uid          = var.security_context_uid
+  security_context_fsgroup      = var.security_context_fsgroup
   env                           = each.value.env == null ? local.env : merge(local.env, each.value.env)
   resources_limits_cpu          = each.value.resources_limits_cpu
   resources_limits_memory       = each.value.resources_limits_memory
