@@ -1,11 +1,10 @@
 locals {
   #  deployments = var.celery_enabled == false ? var.deployments : merge(var.deployments, {
-  deployments = merge(var.deployments, {
+  deployments = merge({
     "celery-beat" = var.celery_beat_defaults
   }, {
     "celery-worker" = var.celery_worker_defaults
-  }
-  )
+  }, var.deployments)
 
   database_url = coalesce(
     lookup(var.secret_env, "DATABASE_URL", null),
