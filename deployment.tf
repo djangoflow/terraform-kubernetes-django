@@ -1,7 +1,7 @@
 module "deployment" {
-  #  source     = "../terraform-kubernetes-deployment"
+#    source     = "../terraform-kubernetes-deployment"
   source     = "djangoflow/deployment/kubernetes"
-  version    = ">=1.6.2"
+  version    = ">=2.5.1"
   for_each   = local.deployments
   depends_on = [kubernetes_secret_v1.secrets]
 
@@ -59,6 +59,7 @@ module "deployment" {
   node_selector = var.gcp_bucket_name != null && var.cloud_sa_name != null ? {
     "iam.gke.io/gke-metadata-server-enabled" = "true"
   } : {}
+  service_links = true
   ports = each.value.port > 0 ? [
     {
       name           = "http"

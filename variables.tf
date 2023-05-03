@@ -379,4 +379,3 @@ variable "security_context_uid" {
 variable "security_context_fsgroup" {
   default = null
 }
-
