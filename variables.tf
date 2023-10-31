@@ -79,6 +79,11 @@ variable "gcp_bucket_name" {
   description = "Create and use Google storage with this name"
 }
 
+variable "gcp_bucket_location" {
+  type        = string
+  description = "The location of the bucket, e.g. EU or US"
+}
+
 variable "public_storage" {
   type        = bool
   default     = true

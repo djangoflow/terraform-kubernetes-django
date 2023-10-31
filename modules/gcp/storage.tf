@@ -1,7 +1,8 @@
+
 resource "google_storage_bucket" "media-bucket" {
   count                       = var.gcp_bucket_name != null ? 1 : 0
   name                        = var.gcp_bucket_name
-  location                    = "EU"
+  location                    = var.gcp_bucket_location
   storage_class               = "MULTI_REGIONAL"
   uniform_bucket_level_access = true
   cors {

@@ -31,3 +31,7 @@ variable "gcp_sa_extra_roles" {
 variable "gcp_bucket_public" {
   default = true
 }
+
+variable "gcp_bucket_location" {
+  type = string
+}
