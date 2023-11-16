@@ -152,6 +152,7 @@ variable "deployments" {
   default = {
     "web" = {
       pre_install_migrate = true
+      pre_install_command = []
       replicas            = 1
       name                = "web"
       port                = 5000
@@ -315,6 +316,7 @@ variable "celery_beat_defaults" {
     name                = "celery-beat"
     command             = null
     pre_install_migrate = false
+    pre_install_command = []
     args                = ["/start-celerybeat"]
     port                = 0
     liveness_probe      = {
@@ -339,6 +341,7 @@ variable "celery_worker_defaults" {
     name                = "celery-worker"
     command             = null
     pre_install_migrate = false
+    pre_install_command = []
     args                = ["/start-celeryworker"]
     port                = 0
     liveness_probe      = {
