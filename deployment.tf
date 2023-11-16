@@ -1,11 +1,13 @@
 module "deployment" {
-#    source     = "../terraform-kubernetes-deployment"
+  #    source     = "../terraform-kubernetes-deployment"
   source     = "djangoflow/deployment/kubernetes"
   version    = ">=2.5.1"
   for_each   = local.deployments
   depends_on = [kubernetes_secret_v1.secrets]
 
-  pre_install_job_command = each.value.pre_install_migrate == true ? ["python", "manage.py", "migrate"] : []
+  pre_install_job_command = each.value.pre_install_command != [] ?  each.value.pre_install_command : each.value.pre_install_migrate == true ? [
+    "python", "manage.py", "migrate"
+  ] : []
 
   service_account_name          = var.service_account_name
   object_prefix                 = "${var.name}-${each.key}"
@@ -50,17 +52,17 @@ module "deployment" {
   })
 
   env_secret = [
-  for k, v in    local.secret_env : {
-    secret = "${var.name}-secrets"
-    name   = k
-    key    = k
-  }
+    for k, v in    local.secret_env : {
+      secret = "${var.name}-secrets"
+      name   = k
+      key    = k
+    }
   ]
   node_selector = var.gcp_bucket_name != null && var.cloud_sa_name != null ? {
     "iam.gke.io/gke-metadata-server-enabled" = "true"
   } : {}
   service_links = true
-  ports = each.value.port > 0 ? [
+  ports         = each.value.port > 0 ? [
     {
       name           = "http"
       protocol       = "TCP"

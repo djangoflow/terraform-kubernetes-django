@@ -120,6 +120,7 @@ variable "deployments" {
     hpa_max_replicas          = optional(number, 0)
     hpa_target_cpu            = optional(number, 80)
     pre_install_migrate       = optional(bool, false)
+    pre_install_command       = optional(list(string), [])
     env                       = optional(map(string))
     liveness_probe            = optional(object({
       enabled  = optional(bool, true)
