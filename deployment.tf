@@ -5,7 +5,7 @@ module "deployment" {
   for_each   = local.deployments
   depends_on = [kubernetes_secret_v1.secrets]
 
-  pre_install_job_command = each.value.pre_install_command != [] ?  each.value.pre_install_command : (each.value.pre_install_migrate == true ? [
+  pre_install_job_command = length(each.value.pre_install_command) > 0 ?  each.value.pre_install_command : (each.value.pre_install_migrate == true ? [
     "python", "manage.py", "migrate"
   ] : [])
   service_account_name          = var.service_account_name
