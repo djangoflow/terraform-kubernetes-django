@@ -27,6 +27,7 @@ module "deployment" {
   readiness_probe_timeout       = var.readiness_probe.timeout_seconds
   readiness_probe_failure       = var.readiness_probe.failure_threshold
   readiness_probe_success       = var.readiness_probe.success_threshold
+  readiness_probe_command       = each.value.readiness_probe.command
   liveness_probe_enabled        = each.value.liveness_probe.enabled
   liveness_probe_path           = var.liveness_probe.http_get.path
   liveness_probe_port           = var.liveness_probe.http_get.port
@@ -35,6 +36,7 @@ module "deployment" {
   liveness_probe_timeout        = var.liveness_probe.timeout_seconds
   liveness_probe_failure        = var.liveness_probe.failure_threshold
   liveness_probe_success        = var.liveness_probe.success_threshold
+  liveness_probe_command        = each.value.liveness_probe.command
   startup_probe_enabled         = false
   security_context_enabled      = var.security_context_enabled
   security_context_gid          = var.security_context_gid
