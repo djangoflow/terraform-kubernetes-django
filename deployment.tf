@@ -20,6 +20,7 @@ module "deployment" {
   namespace                     = var.namespace
   volumes                       = var.volumes
   readiness_probe_enabled       = each.value.readiness_probe.enabled
+  readiness_probe_type          = length(each.value.readiness_probe.command)> 0 ? "exec" : "http_get"
   readiness_probe_path          = var.readiness_probe.http_get.path
   readiness_probe_port          = var.readiness_probe.http_get.port
   readiness_probe_scheme        = var.readiness_probe.http_get.scheme
@@ -29,6 +30,7 @@ module "deployment" {
   readiness_probe_success       = var.readiness_probe.success_threshold
   readiness_probe_command       = each.value.readiness_probe.command
   liveness_probe_enabled        = each.value.liveness_probe.enabled
+  liveness_probe_type           = length(each.value.liveness_probe.command)> 0 ? "exec" : "http_get"
   liveness_probe_path           = var.liveness_probe.http_get.path
   liveness_probe_port           = var.liveness_probe.http_get.port
   liveness_probe_scheme         = var.liveness_probe.http_get.scheme

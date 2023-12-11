@@ -129,7 +129,7 @@ variable "deployments" {
         port   = number
         scheme = string
       }))
-      command               = optional(list(string))
+      command               = optional(list(string), [])
       success_threshold     = optional(number)
       failure_threshold     = optional(number)
       initial_delay_seconds = optional(number)
@@ -143,7 +143,7 @@ variable "deployments" {
         port   = number
         scheme = string
       }))
-      command               = optional(list(string))
+      command               = optional(list(string), [])
       success_threshold     = optional(number)
       failure_threshold     = optional(number)
       initial_delay_seconds = optional(number)
@@ -184,7 +184,7 @@ variable "readiness_probe" {
     }
     success_threshold     = 1
     failure_threshold     = 3
-    initial_delay_seconds = 10
+    initial_delay_seconds = 20
     period_seconds        = 30
     timeout_seconds       = 3
   }
@@ -212,7 +212,7 @@ variable "liveness_probe" {
     }
     success_threshold     = 1
     failure_threshold     = 3
-    initial_delay_seconds = 10
+    initial_delay_seconds = 20
     period_seconds        = 30
     timeout_seconds       = 3
   }
@@ -323,9 +323,11 @@ variable "celery_beat_defaults" {
     port                = 0
     liveness_probe      = {
       enabled = false
+      command = []
     }
     readiness_probe = {
       enabled = false
+      command = []
     }
     resources_limits_cpu      = "250m"
     resources_limits_memory   = "256Mi"
@@ -352,7 +354,7 @@ variable "celery_worker_defaults" {
     }
     readiness_probe = {
       enabled = false
-      command = ["celery", "-A", "config.celery_app", "inspect", "ping"]
+      command = []
     }
     resources_limits_cpu      = "900m"
     resources_limits_memory   = "768Mi"
