@@ -186,7 +186,7 @@ variable "readiness_probe" {
     failure_threshold     = 3
     initial_delay_seconds = 20
     period_seconds        = 30
-    timeout_seconds       = 3
+    timeout_seconds       = 5
   }
 }
 
@@ -214,7 +214,7 @@ variable "liveness_probe" {
     failure_threshold     = 3
     initial_delay_seconds = 20
     period_seconds        = 30
-    timeout_seconds       = 3
+    timeout_seconds       = 5
   }
 }
 
