@@ -41,12 +41,3 @@ output "s3_access_key" {
   sensitive = true
 }
 
-output "s3_endpoint_url" {
-  value = module.aws.0.aws_s3_endpoint_url
-}
-
-output "s3_access_key" {
-  value = module.aws.0.aws_iam_access_key
-  sensitive = true
-}
-

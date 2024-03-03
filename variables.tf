@@ -52,6 +52,7 @@ variable "env" {
 variable "secret_env" {
   type        = map(string)
   description = "A map of extra secret environment variables"
+  default     = {}
 }
 
 variable "service_account_name" {
@@ -222,12 +223,11 @@ variable "liveness_probe" {
 variable "ingress" {
   type        = map(map(string))
   description = "A map of hostnames with maps of path-names and services"
-  # Example:
-  #  default     = {
-  #    "api.demo.djangoflow.com": {
-  #      "/": "api"
-  #    }
-  #  }
+  default     = {
+    "api.demo.djangoflow.com" : {
+      "/" : "api"
+    }
+  }
 }
 
 variable "ingress_annotations" {
@@ -384,13 +384,86 @@ variable "security_context_enabled" {
 }
 
 variable "security_context_gid" {
+  type    = number
   default = 101
 }
 
 variable "security_context_uid" {
+  type    = number
   default = 101
 }
 
 variable "security_context_fsgroup" {
   default = null
+}
+
+variable "aws_region" {
+  type        = string
+  description = "AWS region"
+  default     = ""
+}
+
+variable "cloudflare_api_token" {
+  type        = string
+  description = "Cloudflare API token"
+  default     = "12321321332145325-435325432543254325-4532542353254325-"
+}
+
+variable "gcp_region" {
+  type        = string
+  description = "GCP region"
+  default     = ""
+}
+
+variable "database_url" {
+  type        = string
+  description = "Database URL"
+  default     = ""
+}
+
+variable "redis_url" {
+  type        = string
+  description = "Redis URL"
+  default     = ""
+}
+
+variable "aws_secret" {
+  type        = string
+  description = "AWS secret"
+  default     = ""
+}
+
+variable "aws_id" {
+  type        = string
+  description = "AWS id"
+  default     = ""
+}
+
+variable "aws_s3_endpoint_url" {
+  type        = string
+  description = "AWS S3 endpoint URL"
+  default     = ""
+}
+
+variable "gcp_access_id" {
+  type        = string
+  description = "GCP access id"
+  default     = ""
+}
+
+variable "gcp_secret" {
+  type        = string
+  description = "GCP secret"
+  default     = ""
+}
+
+variable "service_account_email" {
+  type    = string
+  description = "Service account email"
+  default = "example@project.iam.gserviceaccount.com"
+}
+
+variable "gcp_project_id" {
+  type = string
+  description = "The GCP project ID"
 }
